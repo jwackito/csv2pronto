@@ -16,7 +16,8 @@ from .null_objects.safe_objects import SafeGraph, SafeNamespace
 from .wrappers.wrappers import default_to_incremental, default_to_NoneNode
 
 PR = SafeNamespace(
-    "https://raw.githubusercontent.com/fdioguardi/pronto/main/ontology/pronto.owl#"
+    #"https://raw.githubusercontent.com/fdioguardi/pronto/main/ontology/pronto.owl#"
+    "https://raw.githubusercontent.com/jwackito/csv2pronto/main/ontology/pronto.owl#"
 )
 SIOC = SafeNamespace("http://rdfs.org/sioc/ns#")
 GR = SafeNamespace("http://purl.org/goodrelations/v1#")
@@ -33,6 +34,36 @@ def create_graph_from_chunk(df: pd.DataFrame, graph, idx, destination, format) -
     for i in range(len(df)):
         graph += create_graph(df.iloc[i].to_dict())
     graph.serialize(destination+f'.{idx:03}', format=format)
+
+
+def create_graph_real_estate(row: dict) -> Graph:
+    """
+    Return a graph `g` with the info on `row`.
+
+    Args:
+        row (dict): Dictionary with the info to add.
+    """
+
+    row = {k: v for k, v in row.items() if v != ""}
+    row = Faker.anonymize(row)
+
+    g: Graph = SafeGraph()
+
+    #listing = add_listing(g, row)
+    #agent, account = add_agent(g, row)
+    real_estate = add_real_estate(g, row)
+
+    #g.add((listing, SIOC.has_creator, account))
+    #g.add((account, SIOC.creator_of, listing))
+    #g.add((listing, FOAF.maker, agent))
+    #g.add((agent, FOAF.made, listing))
+
+    #g.add((listing, SIOC.about, real_estate))
+
+    #g.add((real_estate, PR.managed_by, agent))
+    #g.add((agent, PR.manages, real_estate))
+
+    return g
 
 
 def create_graph(row: dict) -> Graph:
